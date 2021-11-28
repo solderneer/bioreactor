@@ -12,5 +12,5 @@ void setup() {
 void loop() {
   int temp = tc.measureTemp();
   Serial.println(temp);
-  tc.setHeaterOutput(100);
+  tc.setHeaterOutput(0);
 }

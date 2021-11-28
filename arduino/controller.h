@@ -1,6 +1,5 @@
 #ifndef CONTROLLER_H
   #define CONTROLLER_H
-
   // Abstract class for all subsystem controllers
   class Controller {
     public:
