@@ -86,4 +86,15 @@ void PIDSystem::setMode(int mode) {
     _iterm = _out_min;
 }
 
+PIDLog PIDSystem::log(void) {
+  PIDLog log;
+
+  log.input = _input;
+  log.output = _output;
+  log.kp = _kp;
+  log.ki = _ki;
+  log.kd = _kd;
+
+  return log;
+}
 

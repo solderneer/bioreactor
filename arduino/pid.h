@@ -13,6 +13,15 @@ class Controller {
     virtual void write(double output) = 0;
 };
 
+typedef struct {
+  double input;
+  double output;
+  double kp;
+  double ki;
+  double kd;
+} PIDLog;
+
+
 class PIDSystem {
   public:
     double _setpoint;
@@ -22,6 +31,7 @@ class PIDSystem {
     void setParameters(double kp, double ki, double kd); 
     void setLimits(double out_min, double out_max);
     void setMode(int mode);
+    PIDLog log(void);
 
   private:
     Controller* _controller;

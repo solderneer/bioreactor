@@ -5,3 +5,8 @@
 2. Following the instructiosn in Arduino Makefile
   * https://github.com/sudar/Arduino-Makefile
 3. `make`
+
+# C++ code styling guide
+* Variable Names : `snake_case`
+* Class Names: `PascalCase`
+* Function Names: `camelCase`
