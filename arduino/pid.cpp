@@ -17,7 +17,7 @@ void PIDSystem::run(void) {
   if(time_change >= _sample_time) {
     
     // Get the input
-    _input = controller->read();
+    _input = _controller->read();
 
     // Compute all the error variables
     double error = _setpoint - _input;
@@ -31,7 +31,7 @@ void PIDSystem::run(void) {
 
     double d_input = _input - _last_input;
 
-    // Computer PID output
+    // Compute PID output
     _output = _kp * error + _iterm - _kd * d_input;
 
     // Clamping the output to prevent windup
