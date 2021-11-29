@@ -6,7 +6,7 @@ MotorController::MotorController(int motor_pin, int encoder_pin) {
 }
 
 double MotorController::read(void) {
-  // Add code here
+  setMotorOutput()
   return 0.0;
 }
 
@@ -16,11 +16,16 @@ void MotorController::write(double output) {
 }
 
 int MotorController::measureSpeed(void) {
-  // Add code here
+  duration = pulseIn(_encoder_pin, HIGH)
   return;
 }
 
 void MotorController::setMotorOutput(int output) {
-  // Add code here
+  if (duration > 2500) {
+        digitalWrite( _motor_pin, HIGH);
+      }
+      else{
+        digitalWrite(_motor_pin, LOW)
+      }
   return;
 }
