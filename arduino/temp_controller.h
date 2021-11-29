@@ -8,8 +8,9 @@ class TempController : public Controller {
     TempController(int heater_pin, int thermister_pin);
     double read();
     void write(double ouput);
+
     void setHeaterOutput(int output);
-    void calibrate(double r_fix, a_1, a_2, a_3);
+    void calibrate(double r_fix, double a1, double a2, double a3);
     double measureTemp(void);
     
   private:

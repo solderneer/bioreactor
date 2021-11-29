@@ -8,7 +8,7 @@ class MotorController : public Controller {
     MotorController(int motor_pin, int encoder_pin);
     double read();
     void write(double output);
-    int measureSpeed(void);
+    double measureSpeed(void);
     void setMotorOutput(int output);
 
   private:
