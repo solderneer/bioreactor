@@ -49,6 +49,7 @@ double TempController::measureTemp(void) {
   double rt = _r_fix * ((1023.0 / double(vin)) - 1.0);
   double log_rt = log(rt);
 
+  // Steinhart-Hart equation
   return (1.0/(_a1 + _a2*log_rt + _a3*log_rt*log_rt*log_rt)) - 273.15;
 }
 
