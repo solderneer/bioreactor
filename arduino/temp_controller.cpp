@@ -28,6 +28,12 @@ void TempController::write(double output) {
 // Returns the temperature in Celsius
 int TempController::measureTemp(void) {
   return analogRead(_thermister_pin);
+float voltage = o * 5.0;
+voltage /= 1024.0; //converting voltage at thermistor pin to milivolts
+float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree with 500 mV offset
+                                               //to degrees ((voltage - 500mV) times 100)
+  return (double)temperatureC();
+  Serial.print(temperatureC); Serial.println(" degrees C");
 }
 
 // Controls the output power of the heater
