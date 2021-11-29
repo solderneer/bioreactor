@@ -31,6 +31,7 @@ class PIDSystem {
     void setParameters(double kp, double ki, double kd); 
     void setLimits(double out_min, double out_max);
     void setMode(int mode);
+    void print(void);
     PIDLog log(void);
 
   private:

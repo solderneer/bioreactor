@@ -9,10 +9,13 @@ class TempController : public Controller {
     double read();
     void write(double ouput);
     void setHeaterOutput(int output);
-    int measureTemp(void);
+    void calibrate(double r_fix, a_1, a_2, a_3);
+    double measureTemp(void);
     
   private:
     int _heater_pin = 9;
     int _thermister_pin = 10;
+    double _r_fix;
+    double _a1, _a2, _a3;
 };
 #endif

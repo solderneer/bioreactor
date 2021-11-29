@@ -26,24 +26,12 @@ void loop() {
   Serial.println(temp);
   tc.setHeaterOutput(0);*/
   temp.run();
-  PIDLog log = temp.log(); 
 
   unsigned long now = millis();
   int time_change = now - last_time;
 
   if(time_change >= log_time) {
-    Serial.print("Input: ");
-    Serial.println(log.input);
-    Serial.print("Output: ");
-    Serial.println(log.output);
-    Serial.print("Kp: ");
-    Serial.println(log.kp);
-    Serial.print("Ki: ");
-    Serial.println(log.ki);
-    Serial.print("Kd: ");
-    Serial.println(log.kd);
-    Serial.println("----------------------");
-
+    temp.print();
     last_time = now;
   }
 }

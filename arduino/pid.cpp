@@ -98,3 +98,18 @@ PIDLog PIDSystem::log(void) {
   return log;
 }
 
+void PIDSystem::print(void) {
+  PIDLog pid_log = log();
+
+  Serial.print("Input: ");
+  Serial.println(pid_log.input);
+  Serial.print("Output: ");
+  Serial.println(pid_log.output);
+  Serial.print("Kp: ");
+  Serial.println(pid_log.kp);
+  Serial.print("Ki: ");
+  Serial.println(pid_log.ki);
+  Serial.print("Kd: ");
+  Serial.println(pid_log.kd);
+  Serial.println("----------------------");
+}
