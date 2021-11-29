@@ -52,8 +52,8 @@ void PIDSystem::setParameters(double kp, double ki, double kd) {
   double sample_time_secs = ((double)_sample_time)/1000;
 
   _kp = kp;
-  _ki *= sample_time_secs;
-  _kd /= sample_time_secs;
+  _ki = ki * sample_time_secs;
+  _kd = kd / sample_time_secs;
 }
 
 void PIDSystem::setLimits(double out_min, double out_max) {

@@ -13,7 +13,7 @@ class MotorController : public Controller {
 
   private:
     int _motor_pin = 9;
-    int _motor_pin = 10;
-}
+    int _encoder_pin = 10;
+};
 
 #endif

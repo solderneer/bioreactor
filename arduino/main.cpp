@@ -8,11 +8,16 @@
 TempController tc(HEATER_PIN, THERMISTER_PIN);
 PIDSystem temp(&tc, 1000);
 
+const int log_time = 1000;
+unsigned long last_time = 0;
+
 void setup() {
   // Setting up the parameters
-  temp.setParameters(1.0, 10.0, 5.0);
+  temp.setParameters(1.0, 1.0, 1.0);
   temp.setLimits(0.0, 255.0);
-  temp._setpoint = 30.0;
+  temp._setpoint = 600.0;
+
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -21,4 +26,24 @@ void loop() {
   Serial.println(temp);
   tc.setHeaterOutput(0);*/
   temp.run();
+  PIDLog log = temp.log(); 
+
+  unsigned long now = millis();
+  int time_change = now - last_time;
+
+  if(time_change >= log_time) {
+    Serial.print("Input: ");
+    Serial.println(log.input);
+    Serial.print("Output: ");
+    Serial.println(log.output);
+    Serial.print("Kp: ");
+    Serial.println(log.kp);
+    Serial.print("Ki: ");
+    Serial.println(log.ki);
+    Serial.print("Kd: ");
+    Serial.println(log.kd);
+    Serial.println("----------------------");
+
+    last_time = now;
+  }
 }
