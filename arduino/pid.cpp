@@ -88,12 +88,13 @@ void PIDSystem::setMode(int mode) {
 
 PIDLog PIDSystem::log(void) {
   PIDLog log;
+  double sample_time_secs = ((double)_sample_time)/1000;
 
   log.input = _input;
   log.output = _output;
   log.kp = _kp;
-  log.ki = _ki;
-  log.kd = _kd;
+  log.ki = _ki / sample_time_secs;
+  log.kd = _kd * sample_time_secs;
 
   return log;
 }

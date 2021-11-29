@@ -37,7 +37,7 @@ double MotorController::measureSpeed(void) {
   unsigned long end = millis();
 
   // Converting from milliseconds to minutes (60000ms per minute)
-  unsigned long total = (end - start) / 60000;
+  double total = ((double)end - (double)start) / 60000;
   // Each time difference is half a rotation
   double rpm = 1 / (2 * total);
   return rpm;

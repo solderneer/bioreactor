@@ -6,16 +6,16 @@
 #include "pid.h"
 
 // Pins for temperature subsystem
-#define HEATER_PIN 10
+#define HEATER_PIN 11
 #define THERMISTER_PIN A0
 
 // Pins for pH subsystem
 #define PH_PIN A1
-#define ACID_PIN 5
-#define ALKALI_PIN 6
+#define ACID_PIN 6
+#define ALKALI_PIN 10
 
 // Pins for motor subsystem
-#define MOTOR_PIN 11
+#define MOTOR_PIN 5
 #define ENCODER_PIN 3
 
 // pH calibration voltages
@@ -69,12 +69,15 @@ void setup() {
 
 void loop() {
   temp.run();
+  ph.run();
+  // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
+  motor.run();
 
   unsigned long now = millis();
   int time_change = now - last_time;
 
   if(time_change >= log_time) {
-    temp.print();
+    motor.print();
     last_time = now;
   }
 }

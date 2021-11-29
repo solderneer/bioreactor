@@ -33,8 +33,8 @@ double PhController::measurePh(void) {
 
 void PhController::calibrate(double ph_5, double ph_9) {
   // Calculate the linear model
-  _m = (ph_9 - ph_5) / 4;
-  _c = ph_9 - (_m * 9);
+  _m = 4 / (ph_9 - ph_5);
+  _c = 9 - (_m * ph_9);
 }
 
 // Between 0ms and 500ms of flow (+ve means alkali, -ve means acid)
@@ -46,6 +46,6 @@ void PhController::flowMs(int flow_time) {
   } else if (flow_time < 0) {
     digitalWrite(_acid_pin, HIGH);
     delay(abs(flow_time));
-    digitalWrite(_alkali_pin, LOW);
+    digitalWrite(_acid_pin, LOW);
   }
 }
