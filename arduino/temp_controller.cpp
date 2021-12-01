@@ -1,5 +1,5 @@
+#include <Arduino.h>
 #include "temp_controller.h"
-#include "Arduino.h"
 
 // Reference: http://web.cecs.pdx.edu/~eas199/B/howto/thermistorArduino/thermistorArduino.pdf
 

@@ -1,5 +1,5 @@
-#include "pid.h"
 #include "Arduino.h"
+#include "pid.h"
 
 PIDSystem::PIDSystem(Controller *controller, int sample_time) {
   _controller = controller;
@@ -56,6 +56,20 @@ void PIDSystem::setParameters(double kp, double ki, double kd) {
   _kd = kd / sample_time_secs;
 }
 
+void PIDSystem::setKp(double kp) {
+  _kp = kp;
+}
+
+void PIDSystem::setKi(double ki) {
+  double sample_time_secs = ((double)_sample_time)/1000;
+  _ki = ki * sample_time_secs;
+}
+
+void PIDSystem::setKd(double kd) {
+  double sample_time_secs = ((double)_sample_time)/1000;
+  _kd = kd / sample_time_secs;
+}
+
 void PIDSystem::setLimits(double out_min, double out_max) {
   _out_min = out_min;
   _out_max = out_max;
@@ -90,6 +104,7 @@ PIDLog PIDSystem::log(void) {
   PIDLog log;
   double sample_time_secs = ((double)_sample_time)/1000;
 
+  log.setpoint = _setpoint;
   log.input = _input;
   log.output = _output;
   log.kp = _kp;
@@ -102,6 +117,8 @@ PIDLog PIDSystem::log(void) {
 void PIDSystem::print(void) {
   PIDLog pid_log = log();
 
+  Serial.print("Setpoint: ");
+  Serial.println(pid_log.setpoint);
   Serial.print("Input: ");
   Serial.println(pid_log.input);
   Serial.print("Output: ");

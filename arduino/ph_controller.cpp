@@ -1,5 +1,5 @@
+#include <Arduino.h>
 #include "ph_controller.h"
-#include "Arduino.h"
 
 // Initialises the controller
 // Acid and Alkali pins can just be digital pins

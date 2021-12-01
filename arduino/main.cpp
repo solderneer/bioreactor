@@ -1,8 +1,10 @@
-#include "Arduino.h"
+#include <Arduino.h>
+#include <Wire.h>
 
 #include "temp_controller.h"
 #include "motor_controller.h"
 #include "ph_controller.h"
+#include "comm.h"
 #include "pid.h"
 
 // Pins for temperature subsystem
@@ -35,8 +37,15 @@
 #define DEFAULT_RPM 1000
 #define DEFAULT_PH 5
 
-const int log_time = 1000;
-unsigned long last_time = 0;
+// I2C ADDRESS
+#define SLAVE_ADDR 9
+
+// I2C Callbacks
+void dataReceive(int numberBytes);
+void dataRequest(void);
+
+// Transmit buffer
+byte t_buffer[24];
   
 MotorController mc(MOTOR_PIN, ENCODER_PIN);
 TempController tc(HEATER_PIN, THERMISTER_PIN);
@@ -64,20 +73,115 @@ void setup() {
   motor.setLimits(0.0, 255.0);
   motor._setpoint = DEFAULT_RPM;
   
+  // Setting up I2C communication
+  Wire.begin(SLAVE_ADDR);
+  Wire.onRequest(dataRequest);
+  Wire.onReceive(dataReceive);
+
   Serial.begin(9600);
+  
+  /*
+  PIDLog log;
+  log.setpoint = 1.00;
+  log.input = 5.00;
+  log.output = 6.00;
+  log.kp = 7.00;
+  log.ki = 8.00;
+  log.kd = 9.00;
+
+  byte test[24];
+  loadLogPacket(&log, test);
+  PIDLog out = unloadLogPacket(test);
+
+  Serial.println(out.setpoint);
+  Serial.println(out.input);
+  Serial.println(out.output);
+  Serial.println(out.kp);
+  Serial.println(out.ki);
+  Serial.println(out.kd);
+  */
 }
 
 void loop() {
-  temp.run();
+  /*
+  temp.run(;
   ph.run();
   // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
   motor.run();
+  }*/
+}
 
-  unsigned long now = millis();
-  int time_change = now - last_time;
+void dataReceive(int numberBytes) {
+  // Some sort of command
+  byte command[5];
+  int i = 0;
 
-  if(time_change >= log_time) {
-    motor.print();
-    last_time = now;
+  // Read the command into the buffer
+  while(Wire.available() && i < 5) {
+    command[i] = Wire.read();
+    i++;
   }
+
+  // buffer[0] is command, buffer[1-4] is a float
+  bool rw = command[0] >> 7; // 1 is write, 0 is read
+  uint8_t subsystem_select = (uint8_t)((command[0] & (0b01100000)) >> 5);
+  uint8_t value_select = (uint8_t)((command[0] & (0b00011000)) >> 3);
+  double value = unloadFloat(command, 1);
+
+  Serial.println(rw);
+  Serial.println(subsystem_select);
+  Serial.println(value_select);
+  Serial.println(value);
+
+  if(rw == true) {
+    // Write mode
+    if(subsystem_select == 1) {
+      // Temp subsystem
+      switch(value_select) {
+        case 0: temp._setpoint = value; break;
+        case 1: temp.setKp(value); break;
+        case 2: temp.setKi(value); break;
+        case 3: temp.setKd(value); break;
+        default: break;
+      } 
+    }
+    else if(subsystem_select == 2) {
+      // pH subsystem
+      switch(value_select) {
+        case 0: ph._setpoint = value; break;
+        case 1: ph.setKp(value); break;
+        case 2: ph.setKi(value); break;
+        case 3: ph.setKd(value); break;
+        default: break;
+      } 
+    } else if(subsystem_select == 3) {
+      // Motor subsystem
+      switch(value_select) {
+        case 0: motor._setpoint = value; break;
+        case 1: motor.setKp(value); break;
+        case 2: motor.setKi(value); break;
+        case 3: motor.setKd(value); break;
+        default: break;
+      } 
+    }
+  } else {
+    // Read mode
+    if(subsystem_select == 1) {
+      // Temp subsystem log
+      PIDLog log = temp.log();
+      loadLogPacket(&log, t_buffer); 
+    } else if(subsystem_select == 2) {
+      // pH subsystem
+      PIDLog log = ph.log();
+      loadLogPacket(&log, t_buffer); 
+    } else if(subsystem_select == 3) {
+      // Motor subsystem
+      PIDLog log = motor.log();
+      loadLogPacket(&log, t_buffer); 
+    }
+  }
+}
+
+void dataRequest() {
+  Wire.write(t_buffer, 24);
 }

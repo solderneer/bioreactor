@@ -14,6 +14,7 @@ class Controller {
 };
 
 typedef struct {
+  double setpoint;
   double input;
   double output;
   double kp;
@@ -29,6 +30,11 @@ class PIDSystem {
     PIDSystem(Controller* controller, int sample_time);
     void run(void);
     void setParameters(double kp, double ki, double kd); 
+
+    void setKp(double kp);
+    void setKi(double ki);
+    void setKd(double kd);
+
     void setLimits(double out_min, double out_max);
     void setMode(int mode);
     void print(void);

@@ -1,5 +1,5 @@
+#include <Arduino.h>
 #include "motor_controller.h"
-#include "Arduino.h"
 
 // Initialises the controller and its pins
 MotorController::MotorController(int motor_pin, int encoder_pin) {
