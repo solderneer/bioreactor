@@ -79,39 +79,22 @@ void setup() {
   Wire.onReceive(dataReceive);
 
   Serial.begin(9600);
-  
-  /*
-  PIDLog log;
-  log.setpoint = 1.00;
-  log.input = 5.00;
-  log.output = 6.00;
-  log.kp = 7.00;
-  log.ki = 8.00;
-  log.kd = 9.00;
-
-  byte test[24];
-  loadLogPacket(&log, test);
-  PIDLog out = unloadLogPacket(test);
-
-  Serial.println(out.setpoint);
-  Serial.println(out.input);
-  Serial.println(out.output);
-  Serial.println(out.kp);
-  Serial.println(out.ki);
-  Serial.println(out.kd);
-  */
 }
 
 void loop() {
   /*
-  temp.run(;
+  temp.run();
   ph.run();
   // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
   motor.run();
-  }*/
+  }
+  */
+  temp.print();
+  delay(1000);
 }
 
 void dataReceive(int numberBytes) {
+  Serial.println("Hi");
   // Some sort of command
   byte command[5];
   int i = 0;
@@ -134,15 +117,27 @@ void dataReceive(int numberBytes) {
   Serial.println(value);
 
   if(rw == true) {
+    Serial.println("1");
     // Write mode
     if(subsystem_select == 1) {
+      Serial.println("2");
       // Temp subsystem
       switch(value_select) {
-        case 0: temp._setpoint = value; break;
-        case 1: temp.setKp(value); break;
-        case 2: temp.setKi(value); break;
-        case 3: temp.setKd(value); break;
-        default: break;
+        case 0: 
+          Serial.println("3");
+          temp._setpoint = value; 
+          break;
+        case 1: 
+          temp.setKp(value); 
+          break;
+        case 2: 
+          temp.setKi(value); 
+          break;
+        case 3: 
+          temp.setKd(value); 
+          break;
+        default: 
+          break;
       } 
     }
     else if(subsystem_select == 2) {
@@ -169,6 +164,7 @@ void dataReceive(int numberBytes) {
     if(subsystem_select == 1) {
       // Temp subsystem log
       PIDLog log = temp.log();
+      Serial.println("Sending");
       loadLogPacket(&log, t_buffer); 
     } else if(subsystem_select == 2) {
       // pH subsystem
