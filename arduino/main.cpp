@@ -94,7 +94,6 @@ void loop() {
 }
 
 void dataReceive(int numberBytes) {
-  Serial.println("Hi");
   // Some sort of command
   byte command[5];
   int i = 0;
@@ -111,20 +110,18 @@ void dataReceive(int numberBytes) {
   uint8_t value_select = (uint8_t)((command[0] & (0b00011000)) >> 3);
   double value = unloadFloat(command, 1);
 
+  /*
   Serial.println(rw);
   Serial.println(subsystem_select);
   Serial.println(value_select);
-  Serial.println(value);
+  Serial.println(value);*/
 
   if(rw == true) {
-    Serial.println("1");
     // Write mode
     if(subsystem_select == 1) {
-      Serial.println("2");
       // Temp subsystem
       switch(value_select) {
         case 0: 
-          Serial.println("3");
           temp._setpoint = value; 
           break;
         case 1: 
@@ -164,7 +161,7 @@ void dataReceive(int numberBytes) {
     if(subsystem_select == 1) {
       // Temp subsystem log
       PIDLog log = temp.log();
-      Serial.println("Sending");
+      // Serial.println("Sending");
       loadLogPacket(&log, t_buffer); 
     } else if(subsystem_select == 2) {
       // pH subsystem
@@ -179,5 +176,10 @@ void dataReceive(int numberBytes) {
 }
 
 void dataRequest() {
+  /* Serial.println("Requested");
+  int i;
+  for(i=0; i < 24; i++) {
+    Serial.println(t_buffer[i], BIN);
+  }*/
   Wire.write(t_buffer, 24);
 }
