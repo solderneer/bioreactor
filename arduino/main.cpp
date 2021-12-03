@@ -33,9 +33,9 @@
 #define TEMP_A3 2.019202697e-07
 
 // Default setpoints
-#define DEFAULT_TEMP 30
-#define DEFAULT_RPM 1000
-#define DEFAULT_PH 5
+#define DEFAULT_TEMP 30.0
+#define DEFAULT_RPM 1000.0
+#define DEFAULT_PH 5.0
 
 // I2C ADDRESS
 #define SLAVE_ADDR 9
@@ -88,14 +88,21 @@ void loop() {
   // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
   motor.run();
   }
-  */
+  
+  Serial.println("TEMP:");
   temp.print();
+  Serial.println("PH:");
+  ph.print();
+  Serial.println("MOTOR:");
+  motor.print();
+  */
+
   delay(1000);
 }
 
 void dataReceive(int numberBytes) {
   // Some sort of command
-  byte command[5];
+  byte command[5] = {0, 0, 0, 0, 0};
   int i = 0;
 
   // Read the command into the buffer
@@ -110,31 +117,21 @@ void dataReceive(int numberBytes) {
   uint8_t value_select = (uint8_t)((command[0] & (0b00011000)) >> 3);
   double value = unloadFloat(command, 1);
 
-  /*
-  Serial.println(rw);
-  Serial.println(subsystem_select);
-  Serial.println(value_select);
-  Serial.println(value);*/
+  
+  // Serial.println(command[0], HEX);
+  // Serial.println(value_select);
+  // Serial.println(value);*/
 
   if(rw == true) {
     // Write mode
     if(subsystem_select == 1) {
       // Temp subsystem
       switch(value_select) {
-        case 0: 
-          temp._setpoint = value; 
-          break;
-        case 1: 
-          temp.setKp(value); 
-          break;
-        case 2: 
-          temp.setKi(value); 
-          break;
-        case 3: 
-          temp.setKd(value); 
-          break;
-        default: 
-          break;
+        case 0: temp._setpoint = value; break;
+        case 1: temp.setKp(value); break;
+        case 2: temp.setKi(value); break;
+        case 3: temp.setKd(value); break;
+        default: break;
       } 
     }
     else if(subsystem_select == 2) {
@@ -161,7 +158,6 @@ void dataReceive(int numberBytes) {
     if(subsystem_select == 1) {
       // Temp subsystem log
       PIDLog log = temp.log();
-      // Serial.println("Sending");
       loadLogPacket(&log, t_buffer); 
     } else if(subsystem_select == 2) {
       // pH subsystem
@@ -176,10 +172,5 @@ void dataReceive(int numberBytes) {
 }
 
 void dataRequest() {
-  /* Serial.println("Requested");
-  int i;
-  for(i=0; i < 24; i++) {
-    Serial.println(t_buffer[i], BIN);
-  }*/
   Wire.write(t_buffer, 24);
 }

@@ -38,13 +38,22 @@ void setup() {
   // put your setup code here, to run once:
   Wire.begin(I2C_SDA, I2C_SCL); // Configure the pins
   Serial.begin(9600);
+
+  // Setting the setpoint of the pH subsystem to 10.0
   sendCommandPacket(1, 2, 0, 10.0);
   delay(100);
+  // Setting the Kp of the pH subsystem to 5.0
+  sendCommandPacket(1, 2, 1, 5.0);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   // Set the Kp for temperature to 1
+
+  // MOTOR and PH print the same stuff
+  // WHEN YOU SET THE motor output stuff it replied 10 for one cycle and then moved to a 1000
+  // First time arduino receives command packet, it gets 2 in subsystem select and then in subsequent
+  // times it gets 3
 
   // Request the temp subsystem data
   sendCommandPacket(0, 2, 0, 0.0);
@@ -52,6 +61,7 @@ void loop() {
   PIDLog out; 
   int stat = receiveLogPacket(&out);
 
+  Serial.println("------------------");
   Serial.println(stat);
   Serial.println(out.setpoint);
   Serial.println(out.input);
@@ -68,7 +78,7 @@ void loop() {
 /************* UTILITY FUNCTIONS *******************/
 
 void sendCommandPacket(bool rw, uint8_t subsystem, uint8_t value_type, double value) {
-  byte command[5];
+  byte command[5] = {0, 0, 0, 0, 0};
   command[0] |= (rw << 7);
   command[0] |= (subsystem & 0b00000011) << 5;
   command[0] |= (value_type & 0b00000011) << 3;
@@ -102,8 +112,10 @@ int receiveLogPacket(PIDLog* log) {
     received++;
   }
 
-  if(received != 24)
+  if(received != 24) {
+    Serial.println(received);
     return -1;
+  }
   
   log->setpoint = unloadFloat(buf, 0);
   log->input = unloadFloat(buf, 4);
