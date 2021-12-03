@@ -15,8 +15,7 @@ typedef struct {
   double kd;
 } PIDLog;
 
-// UTILITY FUNCTIONS
-
+/********** UTILITY FUNCTIONS PROTOTYPES ****************/
 // Receive the log packet into a PIDLog struct
 int receiveLogPacket(PIDLog* log);
 
@@ -34,6 +33,7 @@ void loadFloat(double f, byte* buffer, int offset);
 // value: 0->setpoint, 1->kp, 2->ki, 3->kd
 void sendCommandPacket(bool rw, uint8_t subsystem, uint8_t value_type, double value);
 
+/******* MAIN CODE SECTION *************/
 void setup() {
   // put your setup code here, to run once:
   Wire.begin(I2C_SDA, I2C_SCL); // Configure the pins
@@ -47,14 +47,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  // Set the Kp for temperature to 1
-
-  // MOTOR and PH print the same stuff
-  // WHEN YOU SET THE motor output stuff it replied 10 for one cycle and then moved to a 1000
-  // First time arduino receives command packet, it gets 2 in subsystem select and then in subsequent
-  // times it gets 3
-
   // Request the pH subsystem data
   sendCommandPacket(0, 2, 0, 0.0);
   // Receive the pH subsystem data
@@ -76,7 +68,6 @@ void loop() {
 
 
 /************* UTILITY FUNCTIONS *******************/
-
 void sendCommandPacket(bool rw, uint8_t subsystem, uint8_t value_type, double value) {
   byte command[5] = {0, 0, 0, 0, 0};
   command[0] |= (rw << 7);
@@ -113,7 +104,6 @@ int receiveLogPacket(PIDLog* log) {
   }
 
   if(received != 24) {
-    Serial.println(received);
     return -1;
   }
   
