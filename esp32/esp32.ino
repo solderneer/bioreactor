@@ -55,9 +55,9 @@ void loop() {
   // First time arduino receives command packet, it gets 2 in subsystem select and then in subsequent
   // times it gets 3
 
-  // Request the temp subsystem data
+  // Request the pH subsystem data
   sendCommandPacket(0, 2, 0, 0.0);
-  // Receive the temp subsystem data
+  // Receive the pH subsystem data
   PIDLog out; 
   int stat = receiveLogPacket(&out);
 
