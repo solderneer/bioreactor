@@ -27,10 +27,10 @@
 #define PH_MAX_MS 200
 
 // Temperature calibration
-#define TEMP_R_FIX 10000.0
-#define TEMP_A1 1.009249522e-03
-#define TEMP_A2 2.378405444e-04
-#define TEMP_A3 2.019202697e-07
+#define TEMP_R_FIX 9850.0
+#define TEMP_A1 6.627567593e-03
+#define TEMP_A2 -7.21277582e-04
+#define TEMP_A3 4.396579939e-06
 
 // Default setpoints
 #define DEFAULT_TEMP 30.0
@@ -46,6 +46,7 @@ void dataRequest(void);
 
 // Transmit buffer
 byte t_buffer[24];
+unsigned long last_time = 0;
   
 MotorController mc(MOTOR_PIN, ENCODER_PIN);
 TempController tc(HEATER_PIN, THERMISTER_PIN);
@@ -58,7 +59,7 @@ PIDSystem ph(&pc, 500);
 void setup() {
   // Setting up the temp subsystem
   tc.calibrate(TEMP_R_FIX, TEMP_A1, TEMP_A2, TEMP_A3);
-  temp.setParameters(1.0, 1.0, 1.0);
+  temp.setParameters(20.0, 5.0, 0.0);
   temp.setLimits(0.0, 255.0);
   temp._setpoint = DEFAULT_TEMP;
 
@@ -82,22 +83,32 @@ void setup() {
 }
 
 void loop() {
-  /*
   temp.run();
-  ph.run();
+  // ph.run();
   // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
-  motor.run();
-  }
-  
-  Serial.println("TEMP:");
-  temp.print();
-  Serial.println("PH:");
-  ph.print();
-  Serial.println("MOTOR:");
-  motor.print();
-  */
+  // motor.run();
 
+  unsigned long now = millis();
+  int time_change = now - last_time;
+
+  mc.write(30);
+  
+  if(time_change >= 2000) {
+    Serial.println("TEMP:");
+    temp.print();
+    Serial.println("PH:");
+    ph.print();
+    Serial.println("MOTOR:");
+    motor.print();
+    last_time = now;
+  }
+  /*
+  double temp = tc.measureTemp();
+  tc.setHeaterOutput(255);
+  Serial.println("TEMP:");
+  Serial.println(temp);
   delay(1000);
+  */
 }
 
 void dataReceive(int numberBytes) {

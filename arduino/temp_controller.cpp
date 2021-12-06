@@ -46,7 +46,11 @@ void TempController::calibrate(double r_fix, double a1, double a2, double a3) {
 // Returns the temperature in Celsius
 double TempController::measureTemp(void) {
   int vin = analogRead(_thermister_pin);
+  // Serial.println("VIN:");
+  // Serial.println(vin);
   double rt = _r_fix * ((1023.0 / double(vin)) - 1.0);
+  // Serial.println("RT");
+  // Serial.println(rt);
   double log_rt = log(rt);
 
   // Steinhart-Hart equation
