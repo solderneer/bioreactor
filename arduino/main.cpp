@@ -18,7 +18,7 @@
 
 // Pins for motor subsystem
 #define MOTOR_PIN 5
-#define ENCODER_PIN 3
+#define ENCODER_PIN A2
 
 // pH calibration voltages
 #define PH_5 1.15 
@@ -31,6 +31,9 @@
 #define TEMP_A1 6.627567593e-03
 #define TEMP_A2 -7.21277582e-04
 #define TEMP_A3 4.396579939e-06
+
+// Motor calibration
+#define ENCODER_THRESHOLD 368
 
 // Default setpoints
 #define DEFAULT_TEMP 30.0
@@ -70,6 +73,7 @@ void setup() {
   ph._setpoint = DEFAULT_PH;
 
   // Setting up the motor subsystem
+  mc.setThreshold(ENCODER_THRESHOLD);
   motor.setParameters(1.0, 1.0, 1.0);
   motor.setLimits(0.0, 255.0);
   motor._setpoint = DEFAULT_RPM;

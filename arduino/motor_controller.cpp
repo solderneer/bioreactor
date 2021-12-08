@@ -9,8 +9,12 @@ MotorController::MotorController(int motor_pin, int encoder_pin) {
   pinMode(_encoder_pin, INPUT);
 }
 
+void MotorController::setThreshold(int v) {
+  _threshold = v;
+}
+
 double MotorController::read(void) {
-  return measureSpeed();
+  return measureSpeed(500);
 }
 
 void MotorController::write(double output) {
@@ -22,17 +26,34 @@ void MotorController::write(double output) {
   setMotorOutput(o); 
 }
 
-double MotorController::measureSpeed(void) {
+double MotorController::measureSpeed(uint32_t timeout) {
+  // Timeout parameters
+  unsigned long timout_start = millis();
+
   // Waiting for IR to be unblocked
-  while(digitalRead(_encoder_pin) == true);
+  while(analogRead(_encoder_pin) > _threshold) {
+    if((millis() - timout_start) > timeout)
+      return 0.0;
+  }
   // Waiting for IR to be blocked
-  while(digitalRead(_encoder_pin) == false);
+  while(analogRead(_encoder_pin) < _threshold) {
+    if((millis() - timout_start) > timeout)
+      return 0.0;
+  }
   // Starting timer
   unsigned long start = millis();
+
   // Waiting for it to be unblocked
-  while(digitalRead(_encoder_pin) == true);
+  while(analogRead(_encoder_pin) > _threshold) {
+    if((millis() - timout_start) > timeout)
+      return 0.0;
+  }
   // Waiting for it to be blocked again
-  while(digitalRead(_encoder_pin) == false);
+  while(analogRead(_encoder_pin) < _threshold) {
+    if((millis() - timout_start) > timeout)
+      return 0.0;
+  }
+
   // Ending timing
   unsigned long end = millis();
 
