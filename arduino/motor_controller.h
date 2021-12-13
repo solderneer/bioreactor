@@ -16,6 +16,7 @@ class MotorController : public Controller {
     int _motor_pin;
     int _encoder_pin;
     int _threshold = 368;
+    double _last_rpm = 0.0;
 };
 
 #endif

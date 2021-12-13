@@ -14,7 +14,7 @@ void MotorController::setThreshold(int v) {
 }
 
 double MotorController::read(void) {
-  return measureSpeed(500);
+  return measureSpeed(100);
 }
 
 void MotorController::write(double output) {
@@ -26,6 +26,8 @@ void MotorController::write(double output) {
   setMotorOutput(o); 
 }
 
+// NAN issue
+// SUDDENLY HIGH issue
 double MotorController::measureSpeed(uint32_t timeout) {
   // Timeout parameters
   unsigned long timout_start = millis();
@@ -41,7 +43,7 @@ double MotorController::measureSpeed(uint32_t timeout) {
       return 0.0;
   }
   // Starting timer
-  unsigned long start = millis();
+  unsigned long start = micros();
 
   // Waiting for it to be unblocked
   while(analogRead(_encoder_pin) > _threshold) {
@@ -55,12 +57,22 @@ double MotorController::measureSpeed(uint32_t timeout) {
   }
 
   // Ending timing
-  unsigned long end = millis();
-
+  unsigned long end = micros();
   // Converting from milliseconds to minutes (60000ms per minute)
-  double total = ((double)end - (double)start) / 60000;
+  double total = ((double)end - (double)start) / 60000000;
+
+  // Avoiding the NaN issue
+  if(total == 0)
+    return _last_rpm;
+
   // Each time difference is half a rotation
   double rpm = 1 / (2 * total);
+
+  // Avoiding sudden large spikes
+  if(rpm > 5000)
+    return _last_rpm;
+
+  _last_rpm = rpm;
   return rpm;
 }
 

@@ -31,10 +31,10 @@ double PhController::measurePh(void) {
   return (_m * (double)vin) + _c;
 }
 
-void PhController::calibrate(double ph_5, double ph_9) {
+void PhController::calibrate(double ph_4, double ph_10) {
   // Calculate the linear model
-  _m = 4 / (ph_9 - ph_5);
-  _c = 9 - (_m * ph_9);
+  _m = 6 / (ph_10 - ph_4);
+  _c = 10 - (_m * ph_10);
 }
 
 // Between 0ms and 500ms of flow (+ve means alkali, -ve means acid)

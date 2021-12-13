@@ -21,8 +21,8 @@
 #define ENCODER_PIN A2
 
 // pH calibration voltages
-#define PH_5 1.15 
-#define PH_9 3.5
+#define PH_4 3.09 
+#define PH_10 1.69
 // pH maximum flow ms (should be less than sample time)
 #define PH_MAX_MS 200
 
@@ -33,7 +33,7 @@
 #define TEMP_A3 4.396579939e-06
 
 // Motor calibration
-#define ENCODER_THRESHOLD 368
+#define ENCODER_THRESHOLD 380
 
 // Default setpoints
 #define DEFAULT_TEMP 30.0
@@ -55,8 +55,8 @@ MotorController mc(MOTOR_PIN, ENCODER_PIN);
 TempController tc(HEATER_PIN, THERMISTER_PIN);
 PhController pc(PH_PIN, ACID_PIN, ALKALI_PIN);
 
-PIDSystem temp(&tc, 500);
-PIDSystem motor(&mc, 500);
+PIDSystem temp(&tc, 1000);
+PIDSystem motor(&mc, 200);
 PIDSystem ph(&pc, 500);
 
 void setup() {
@@ -67,15 +67,15 @@ void setup() {
   temp._setpoint = DEFAULT_TEMP;
 
   // Setting up the pH subsystem
-  pc.calibrate(PH_5, PH_9);
+  pc.calibrate(PH_4, PH_10);
   ph.setParameters(1.0, 1.0, 1.0);
   ph.setLimits(-PH_MAX_MS, PH_MAX_MS);
   ph._setpoint = DEFAULT_PH;
 
   // Setting up the motor subsystem
   mc.setThreshold(ENCODER_THRESHOLD);
-  motor.setParameters(1.0, 1.0, 1.0);
-  motor.setLimits(0.0, 255.0);
+  motor.setParameters(0.05, 0.0, 0.0);
+  motor.setLimits(30.0, 60.0);
   motor._setpoint = DEFAULT_RPM;
   
   // Setting up I2C communication
@@ -88,16 +88,13 @@ void setup() {
 
 void loop() {
   temp.run();
-  // ph.run();
-  // TODO: Bug where motor rpm suddenly halfs randomly for no reason and there is random noise
-  // motor.run();
+  ph.run();
+  motor.run();
 
   unsigned long now = millis();
   int time_change = now - last_time;
-
-  mc.write(30);
-  
-  if(time_change >= 2000) {
+   
+  if(time_change >= 1000) {
     Serial.println("TEMP:");
     temp.print();
     Serial.println("PH:");
@@ -106,13 +103,6 @@ void loop() {
     motor.print();
     last_time = now;
   }
-  /*
-  double temp = tc.measureTemp();
-  tc.setHeaterOutput(255);
-  Serial.println("TEMP:");
-  Serial.println(temp);
-  delay(1000);
-  */
 }
 
 void dataReceive(int numberBytes) {

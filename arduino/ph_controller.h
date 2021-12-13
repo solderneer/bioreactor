@@ -10,7 +10,7 @@ class PhController : public Controller {
     void write(double output);
 
     // Calibrating the internal linear model by passing in reading @ 5pH and 9pH
-    void calibrate(double ph_5, double ph_9);
+    void calibrate(double ph_4, double ph_10);
     double measurePh(void);
     void flowMs(int flow_time);
 
